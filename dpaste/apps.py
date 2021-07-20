@@ -634,8 +634,8 @@ class dpasteAppConfig(AppConfig):
             site = get_current_site(request)
             if site:
                 return f"https://{site.domain}"
-        elif os.getenv("DPASTE_BASE_URL"):
-            domain = os.getenv("DPASTE_BASE_URL")
+        elif os.getenv("DPASTE_BASE_DOMAIN"):
+            domain = os.getenv("DPASTE_BASE_DOMAIN")
             return f"https://{domain}"
         return "https://paste.mozilla.org"
 
