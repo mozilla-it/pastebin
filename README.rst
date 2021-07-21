@@ -36,8 +36,4 @@ please create an *Issue* there.
 ⚠️ dpaste requires at a minimum Python 3.6 and Django 2.2.
 
 .. _dpaste.de: https://dpaste.de/
-
-
-
-   exciting
 .. _pastebin: https://en.wikipedia.org/wiki/Pastebin
