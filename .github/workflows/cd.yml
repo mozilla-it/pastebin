@@ -1,10 +1,10 @@
-name: CD (Docker Build & Push)
+name: Delivery & Release (Docker Build, Tag & Push)
 
 on:
   push:
     branches: [master]
-  pull_request:
-    branches: [master]
+  release:
+    types: [released]
 
 jobs:
   prepare:
@@ -14,13 +14,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set Image Tag
+      - name: Set Tag
         id: tag
         run: |
-          export GIT_TAG=$(git describe --abbrev=7 --always --tags)
-          echo "::set-output name=tag::stg-${GIT_TAG}"
+          export CI_COMMIT_SHORT_SHA=$(git describe --abbrev=7 --always --tags)
+          echo $CI_COMMIT_SHORT_SHA;
+          if [ ${GITHUB_REF##*/} = "master" ]; then
+            echo "::set-output name=tag::stg-$CI_COMMIT_SHORT_SHA"
+          else
+            echo "::set-output name=tag::$CI_COMMIT_SHORT_SHA"
+          fi
 
-  build-and-push-image:
+  build-push-promote-image:
     runs-on: ubuntu-latest
     needs: prepare
     steps:
@@ -43,8 +48,9 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      - name: Build and push to ECR
+      - name: Build and Push Stage Image to ECR
         id: build-push
+        if: github.ref == 'refs/heads/master'
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: pastebin
@@ -54,6 +60,17 @@ jobs:
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
+      - name: Pull Stage Image, Tag Prod, & Push Prod to ECR
+        id: pull-tag-push
+        if: github.event_name == 'release' && github.event.action == 'released'
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: pastebin
+          IMAGE_TAG: ${{ needs.prepare.outputs.FULL_IMAGE_TAG }}
+        run: |
+          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
       - name: Logut of Amazon ECR
         if: always()
         run: docker logout ${{ steps.login-ecr.outputs.registry }}

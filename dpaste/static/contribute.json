@@ -9,9 +9,10 @@
     "participate": {
       "home": "https://github.com/mozilla-it/dpaste-1",
       "docs": "https://github.com/mozilla-it/pastebin-infra",
-      "irc": "slack#it-sre",
+      "irc": "slack#it-web-sre",
       "irc-contacts": [
-        "charlow"
+        "charlow",
+        "glob"
       ]
     },
     "bugs": {
