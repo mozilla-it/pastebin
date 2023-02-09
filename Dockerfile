@@ -28,6 +28,10 @@ ARG DEBUG=False
 ENV DEBUG=${DEBUG}
 ENV PORT=8000
 
+# add a non-privileged user for running the application
+RUN groupadd --gid 10001 app && \
+    useradd -g app --uid 10001 --shell /usr/sbin/nologin --create-home --home-dir /app app
+
 RUN echo "\nℹ️  Building Django project with "${BUILD_EXTRAS}" dependencies.\n"
 
 WORKDIR /app
@@ -46,6 +50,8 @@ RUN pip install -e .[${BUILD_EXTRAS}]
 
 # Copy the rest of the application code
 COPY . .
+
+USER app
 
 # Collect all static files once.
 RUN ./manage.py collectstatic --noinput
