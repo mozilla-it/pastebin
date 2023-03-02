@@ -26,10 +26,7 @@
 
 {% block options %}{% endblock %}
 
-<main>
-  <h2 style='text-align:center;color:#6495ED;background-color:#fff'>INFO:<br/>All data has been deleted during the maintenance window on Thursday, 2023-02-23</h2>
-  {% block page %}{% endblock %}
-</main>
+<main>{% block page %}{% endblock %}</main>
 
 <script>{% staticinline "dpaste.js" %}</script>
 {% block extrascript %}{% endblock %}
