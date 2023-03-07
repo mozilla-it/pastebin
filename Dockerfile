@@ -59,6 +59,6 @@ RUN ./manage.py collectstatic --noinput
 # By default run it with pyuwsgi, which is a great production ready
 # server. For development, docker-compose will override it to use the
 # regular Django runserver.
-CMD ./manage.py migrate --noinput && ./manage.py pyuwsgi --http=:${PORT} --logger file:/var/log/uwsgi.log
+CMD ./manage.py migrate --noinput && ./manage.py pyuwsgi --http=:${PORT}
 
 EXPOSE ${PORT}
