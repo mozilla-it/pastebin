@@ -26,7 +26,20 @@
 
 {% block options %}{% endblock %}
 
-<main>{% block page %}{% endblock %}</main>
+<main>
+  <div style="text-align:center;color:#fff;background-color:rgb(23, 37, 94);padding-top: 10px;padding-bottom: 10px;padding-left: 10px;padding-right: 10px;">
+    paste.mozilla.org allows you to share code snippets and notes with others.
+    These pastes require a link to be viewed; they are not private.
+    Anyone with the link is able to see the paste and also delete it.
+    <p>
+      <b>
+      <br>
+        Please refrain from sharing personal or sensitive information on this website to avoid it being viewed by other parties.
+      </b>
+    </p>
+  </div>
+  {% block page %}{% endblock %}
+</main>
 
 <script>{% staticinline "dpaste.js" %}</script>
 {% block extrascript %}{% endblock %}
